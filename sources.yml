@@ -1,0 +1,82 @@
+# Quellen für den Wohnungs-Watcher.
+#
+# WICHTIG: Jede URL vor dem ersten Scharfschalten einmal im Browser öffnen und
+# prüfen, ob sie noch existiert. Websites bauen ihre Struktur regelmäßig um.
+#
+# Felder je Quelle:
+#   name      Anzeigename in der Benachrichtigung (Pflicht)
+#   url       zu überwachende Seite (Pflicht)
+#   selector  optionaler CSS-Selektor, um nur einen Seitenbereich zu prüfen
+#             (reduziert Fehlalarme durch News-Teaser, Cookie-Banner etc.)
+#   keywords  optionale Filterliste; ohne Angabe gilt die globale Liste unten,
+#             mit "keywords: []" wird gar nicht gefiltert (alles melden)
+
+# Globale Filter: nur Zeilen melden, die eines dieser Wörter enthalten.
+# Leer lassen ([]), wenn jede Änderung gemeldet werden soll.
+keywords:
+  - Marienburg
+  - Raderthal
+  - Raderberg
+  - Rodenkirchen
+  - Bayenthal
+  - Sürth
+  - Auenviertel
+  - freie Wohnung
+  - Wohnungsangebot
+  - zu vermieten
+  - Vermietung
+  - Zimmer
+
+quellen:
+  # --- Genossenschaften: der wertvollste Kanal, weil hier kaum jemand mitliest ---
+  - name: "Wohnungsgenossenschaft Köln-Süd eG — Aktuelles"
+    url: "https://www.koeln-sued.de/aktuelles"
+
+  - name: "Köln-Süd eG — Bestand Raderthal"
+    url: "https://www.koeln-sued.de/vermietung/bestand/raderthal"
+
+  - name: "Köln-Süd eG — Bestand Rodenkirchen"
+    url: "https://www.koeln-sued.de/vermietung/bestand/rodenkirchen"
+
+  - name: "Köln-Süd eG — Bestand Raderberg"
+    url: "https://www.koeln-sued.de/vermietung/bestand/raderberg"
+
+  - name: "Kölner Baugenossenschaft von 1920 eG"
+    url: "https://www.koelner-baugenossenschaft.de/"
+
+  - name: "Erbbauverein Köln eG"
+    url: "https://www.erbbauverein.de/"
+
+  - name: "Wohn- und Heimbau eG"
+    url: "https://www.heimbau-koeln.de/"
+
+  - name: "Kölner Wohnungsgenossenschaft eG"
+    url: "https://die-koelner.de/"
+
+  # --- Institutionelle Vermieter ---
+  - name: "GAG Immobilien AG — Immobiliensuche"
+    url: "https://www.gag-koeln.de/immobiliensuche"
+
+  - name: "Aachener Siedlungs- und Wohnungsgesellschaft"
+    url: "https://www.aachener-swg.de/"
+
+  - name: "Antoniter Siedlungsgesellschaft"
+    url: "https://www.antoniter.de/"
+
+  # --- Makler mit Fokus Kölner Süden ---
+  - name: "Ellen Schwarz Immobilien"
+    url: "https://www.ellenschwarz.de/"
+
+  - name: "Greif & Contzen — Privatimmobilien"
+    url: "https://www.greif-contzen.de/immobilienvermittlung/privatimmobilien.html"
+
+  - name: "Rudkowski & Hag Immobilien"
+    url: "https://rudkowski-hag.de/"
+
+  - name: "Immo Biehler — Rodenkirchen"
+    url: "https://immo-biehler.de/immobilienmakler-koeln-rodenkirchen/"
+
+# Bewusst NICHT enthalten: ImmoScout24, Immowelt, Kleinanzeigen.
+# Deren Nutzungsbedingungen untersagen automatisierten Abruf, und sie blocken
+# ihn technisch. Für diese Portale die eigenen Suchagenten mit Push nutzen —
+# die sind ohnehin schneller als jeder selbstgebaute Abruf.
