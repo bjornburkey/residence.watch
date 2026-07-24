@@ -1,0 +1,59 @@
+name: Wohnungs-Watcher
+
+on:
+  schedule:
+    # 3x täglich (UTC). 06:10 / 11:10 / 16:10 UTC = ca. 08:10 / 13:10 / 18:10 MESZ.
+    - cron: "10 6,11,16 * * *"
+  workflow_dispatch:      # erlaubt manuellen Start über die GitHub-Oberfläche
+
+permissions:
+  contents: write         # damit state.json zurückgeschrieben werden kann
+  issues: write           # damit Treffer als Issue gemeldet werden können
+
+concurrency:
+  group: wohnungs-watcher
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Abhängigkeiten installieren
+        run: pip install --quiet requests beautifulsoup4 PyYAML
+
+      - name: Seiten prüfen
+        env:
+          # Optional. Bleiben die Secrets leer, läuft die Meldung über das Issue.
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: python watcher.py
+
+      - name: Treffer als Issue melden
+        if: hashFiles('neue-funde.txt') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "Neue Wohnungs-Treffer — $(date -u +%d.%m.%Y\ %H:%M)" \
+            --body-file neue-funde.txt
+
+      - name: Zustand sichern
+        if: always()
+        run: |
+          rm -f neue-funde.txt
+          git config user.name "wohnungs-watcher"
+          git config user.email "actions@github.com"
+          git add state.json
+          git diff --staged --quiet || git commit -m "Zustand aktualisiert: $(date -u +%F\ %H:%M)"
+          git push
